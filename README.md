@@ -66,7 +66,13 @@ You store your database url in your application code, i.e. mongo_database. Later
 ### StatefulSet
 
 * Handle syncronization
+* Each replica has unique identity and their own storage, which store their states.
+* A replica is not created until the previous replica is created. Deletion happens in reverse order.
 * StatefulSet in k8s is complex. Therefore, people usually deploy their database application outside k8s, and only deploy stateless application on k8s
+
+### DaemonSet
+
+* A *DaemonSet* ensures that all (or some) Nodes run a copy of a Pod. As nodes are added to the cluster, Pods are added to them. As nodes are removed from the cluster, those Pods are garbage collected. Deleting a DaemonSet will clean up the Pods it created.
 
 ## Architecture
 
@@ -151,3 +157,60 @@ We need to match ports too
 
 ![image-20210611111207128](/Users/weisy/Library/Application Support/typora-user-images/image-20210611111207128.png)
 
+## Namespace
+
+### What is namespace
+
+* Virtual cluster in the cluster
+
+### Why
+
+1. Group resources
+2. Separate teams
+3. Resource sharing and reuse
+4. Access and resource control
+
+### Characeristics
+
+1. You can't access most resources from another namespace
+   * For example, ConfigMap and Secret cannot be shared across namespaces
+   * **Services are accessable between namespaces**
+
+2. Volumn and Node are not Namespace specific
+
+## Helm
+
+### What is Helm
+
+* Package manger for k8s(yum for linux)
+* Can also be a template to generate k8s yaml config in batch
+
+### Helm Charts
+
+* Bundle of YAML files
+* Just a package for package manager :)
+
+## Volumes
+
+1. You want a storage that doesn't depend on the pod lifecycle
+
+2. Storage must be available on all nodes
+
+3. Storage needs to persist even cluster crashed
+
+### Persistent Volume
+
+* A component of k8s, link to hardware backend
+* Outside of namespace. Accessible to the whole cluster
+
+### Persistent Volume Claim
+
+* Claim a usage of the PV
+* The pod then use this claim to get access to the storage
+* The pod decide which container can mount the volume
+* ![image-20210611145857698](/Users/weisy/Library/Application Support/typora-user-images/image-20210611145857698.png)
+* ![image-20210611145948554](/Users/weisy/Library/Application Support/typora-user-images/image-20210611145948554.png)
+
+### Storage Class
+
+* SC provisions PV dynamically when PVC claims it
