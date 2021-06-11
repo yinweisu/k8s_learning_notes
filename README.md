@@ -2,6 +2,8 @@
 
 This note is based on: https://www.youtube.com/watch?v=X48VuDVv0do
 
+[TOC]
+
 ## Components
 
 ### Pod
@@ -54,7 +56,7 @@ You store your database url in your application code, i.e. mongo_database. Later
 
 
 
-###  Deployment
+### Deployment
 
 * Deployment is a blueprint for your application(pod), you specify how many replicas you need.
 * <u>In practice, you don't create pods, you create deployments</u>
@@ -65,3 +67,45 @@ You store your database url in your application code, i.e. mongo_database. Later
 
 * Handle syncronization
 * StatefulSet in k8s is complex. Therefore, people usually deploy their database application outside k8s, and only deploy stateless application on k8s
+
+## Architecture
+
+### Node processes
+
+* Each Node has multiple Pods on it
+* There are **3** processes that must be installed on every Node. These 3 processes schedule and mange the pods
+  1. container runtime, i.e. docker
+  2. kubelet
+     * Kubelet interacts with both the container and the node itself
+     * Kubelet starts the pod with a container inside. Assigning resrouces from the nodes to pods
+  3. Kube Proxy
+     * KP forwards the requests to the approriate pod through Service
+
+### Mater nodes
+
+* There are **4** processes that runs on every master node
+
+  1. Api server
+
+     * Cluster gateway(A single entry point)
+     * Gatekeeper for authentication
+
+     * This is what your kubectl cmds is interacting with
+
+  2. Scheduler
+
+     * Schedule pods on worker nodes
+     * **Scheduler just schedule where the pod should be. Kubelet is the one that really starts the pod**
+
+  3. Controller manager
+
+     * Detects cluster state changes, i.e. pods die
+
+  4. etcd
+
+     * A Key Value store of all the cluster changes
+     * **It's the cluster brain**
+     * Of course, the application data is not stored in etcd
+
+     
+
